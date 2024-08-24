@@ -48,8 +48,8 @@ enum GainMode : uint8_t
 
 struct AdcSettings
 {
-    uint16_t CLOCK_IN;
-    uint16_t DIGITAL_FILTER_CUTOFF;
+    int CLOCK_IN;
+    int DIGITAL_FILTER_CUTOFF;
     GainMode GAIN;
     bool IS_UNIPOLAR;
     bool IS_CLKDIS;

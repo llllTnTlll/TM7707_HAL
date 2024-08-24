@@ -132,19 +132,22 @@ void TM7707::initRegisters(Channel ch)
 
     writeFilterRegister(Settings.IS_BST, Settings.IS_CLKDIS, Settings.DIGITAL_FILTER_CUTOFF);  // 无电流增强 无时钟输出 数字滤波截止频率500Hz
     writeSetupRegister(Self, Settings.GAIN, Settings.IS_UNIPOLAR, Settings.IS_BUF, false, ch); // 二倍增益 双极性 无缓冲 自校准
+
+    getADCData(ch);
 }
 
 uint32_t TM7707::getADCData(Channel ch)
 {
     // 读取数据
-    std::string data = "";
-    for (int i = 0; i < 3; i++)
-    {
-        while (HAL_GPIO_ReadPin(DRDY_GPIO_Port, DRDY_Pin) == GPIO_PIN_SET);
-        writeCommunicationRegister(false, DataRegister, false, ch);
-        uint8_t byte = readByte();
-        data += std::to_string(byte);
-    }
+    uint32_t data = 0;
 
-    return ;
+    writeCommunicationRegister(false, DataRegister, false, ch);
+    while (HAL_GPIO_ReadPin(DRDY_GPIO_Port, DRDY_Pin) == GPIO_PIN_SET);
+    data |= readByte();
+    data <<= 8;
+    data |= readByte();
+    data <<= 8;
+    data |= readByte();
+
+    return data;
 }
